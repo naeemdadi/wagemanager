@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NewEmployee() {
+export default function NewEmployee({ authUser }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -56,13 +56,33 @@ export default function NewEmployee() {
   };
 
   const [data, setData] = useState(initialvalue);
+  const [error, setError] = useState(false);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
-    db.collection("employees")
+    if (
+      !data.firstName ||
+      !data.middleName ||
+      !data.lastName ||
+      !data.birthDate ||
+      !data.joiningDate ||
+      !data.monthlyWages ||
+      !data.otRate ||
+      !data.bankAccountNumber ||
+      !data.ifscCode ||
+      !data.pfNumber ||
+      !data.workerCategory
+    ) {
+      setError(true);
+      return;
+    }
+
+    db.collection(authUser.uid)
+      .doc(authUser.displayName)
+      .collection("employees")
       .add(data)
-      .then((ref) => {
+      .then(() => {
         setData({});
         history.push("/employees");
       });
@@ -82,8 +102,12 @@ export default function NewEmployee() {
     });
   };
 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   return (
-    <Container>
+    <div>
       <Typography
         variant="h6"
         color="textSecondary"
@@ -108,6 +132,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("firstName")}
+            error={error}
+            helperText={
+              error && !data.firstName ? "First Name is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -117,6 +146,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("middleName")}
+            error={error}
+            helperText={
+              error && !data.middleName ? "Middle Name is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -126,6 +160,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("lastName")}
+            error={error}
+            helperText={
+              error && !data.lastName ? "Last Name is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
         </div>
 
@@ -139,6 +178,13 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("monthlyWages")}
+            error={error}
+            helperText={
+              error && !data.monthlyWages
+                ? "Monthly wage is Required Field"
+                : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -149,6 +195,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("otRate")}
+            error={error}
+            helperText={
+              error && !data.otRate ? "Overtime Rate is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -170,6 +221,13 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("bankAccountNumber")}
+            error={error}
+            helperText={
+              error && !data.bankAccountNumber
+                ? "Bank Account number is Required Field"
+                : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -179,6 +237,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("ifscCode")}
+            error={error}
+            helperText={
+              error && !data.ifscCode ? "IFSC code is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
         </div>
 
@@ -191,6 +254,11 @@ export default function NewEmployee() {
             className={classes.formField}
             required
             onChange={onChangeHandler("pfNumber")}
+            error={error}
+            helperText={
+              error && !data.pfNumber ? "PF number is Required Field" : null
+            }
+            onFocus={() => setError(false)}
           />
           <TextField
             fullWidth
@@ -252,21 +320,10 @@ export default function NewEmployee() {
           variant="contained"
           className={classes.formField}
           size="large"
-          disabled={
-            !data.firstName ||
-            !data.middleName ||
-            !data.lastName ||
-            !data.monthlyWages ||
-            !data.otRate ||
-            !data.bankAccountNumber ||
-            !data.ifscCode ||
-            !data.pfNumber ||
-            !data.workerCategory
-          }
         >
           Submit
         </Button>
       </form>
-    </Container>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -6,17 +6,18 @@ import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Link, ListItem } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { Link } from "@material-ui/core";
+import { auth } from "../firebase";
+import firebase from "firebase";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -39,8 +40,55 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
-
   const history = useHistory();
+
+  const [userData, setuserData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [isEmailError, setIsEmailError] = useState(false);
+  const [requiredError, setRequiredError] = useState(false);
+
+  function validateEmail(email) {
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  const onChangeHandler = (input) => (e) => {
+    setuserData({
+      ...userData,
+      [input]: e.target.value,
+    });
+  };
+
+  const [remember, setRemember] = useState(false);
+  // const pathname = history.location.state.pathname;
+
+  const signInHandler = (e) => {
+    e.preventDefault();
+
+    if (!userData.password) {
+      setRequiredError(true);
+    } else if (!validateEmail(userData.email)) {
+      setIsEmailError(true);
+    } else {
+      if (remember) {
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() =>
+          auth
+            .signInWithEmailAndPassword(userData.email, userData.password)
+            .then(() => history.push("/"))
+            .catch((error) => alert(error))
+        );
+      } else {
+        auth
+          .signInWithEmailAndPassword(userData.email, userData.password)
+          .then(() => history.push("/"))
+          .catch((error) => alert(error));
+      }
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -52,7 +100,7 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={signInHandler}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -63,6 +111,10 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={onChangeHandler("email")}
+            error={isEmailError}
+            helperText={isEmailError ? "Please add valid Email Address" : null}
+            onFocus={() => setIsEmailError(false)}
           />
           <TextField
             variant="outlined"
@@ -74,9 +126,19 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={onChangeHandler("password")}
+            error={requiredError}
+            helperText={requiredError ? "Password field is required" : null}
+            onFocus={() => setRequiredError(false)}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                onChange={() => setRemember(!remember)}
+              />
+            }
             label="Remember me"
           />
           <Button

@@ -14,7 +14,7 @@ import { auth } from "../firebase";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -42,11 +42,10 @@ export default function SignUp() {
   const [userData, setuserData] = useState({
     email: "",
     password: "",
-    firstName: "",
-    lastName: "",
     companyName: "",
   });
-  const [isError, setIsError] = useState(false);
+  const [isEmailError, setIsEmailError] = useState(false);
+  const [requiredError, setRequiredError] = useState(false);
 
   function validateEmail(email) {
     const re =
@@ -64,13 +63,21 @@ export default function SignUp() {
   const userSignUp = (e) => {
     e.preventDefault();
 
-    if (validateEmail(userData.email)) {
-      // Authenticate
+    if (!userData.companyName || !userData.password) {
+      setRequiredError(true);
+    } else if (!validateEmail(userData.email)) {
+      setIsEmailError(true);
+    } else {
       auth
         .createUserWithEmailAndPassword(userData.email, userData.password)
+        .then(
+          (authUser) =>
+            authUser.user.updateProfile({
+              displayName: userData.companyName,
+            }),
+          history.push("/")
+        )
         .catch((error) => alert(error));
-    } else {
-      setIsError(true);
     }
   };
 
@@ -86,29 +93,22 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate onSubmit={userSignUp}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-                onChange={onChangeHandler("firstName")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
                 fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                onChange={onChangeHandler("lastName")}
+                id="company"
+                label="Company Name"
+                name="company"
+                autoComplete="company"
+                onChange={onChangeHandler("companyName")}
+                error={requiredError}
+                helperText={
+                  requiredError && !userData.companyName
+                    ? "Company name is Required"
+                    : null
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -121,21 +121,11 @@ export default function SignUp() {
                 name="email"
                 autoComplete="email"
                 onChange={onChangeHandler("email")}
-                error={isError}
-                helperText={isError ? "Please add valid Email Address" : null}
-                onFocus={() => setIsError(false)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="company"
-                label="Company Name"
-                name="company"
-                autoComplete="company"
-                onChange={onChangeHandler("companyName")}
+                error={isEmailError}
+                helperText={
+                  isEmailError ? "Please add valid Email Address" : null
+                }
+                onFocus={() => setIsEmailError(false)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -149,6 +139,9 @@ export default function SignUp() {
                 id="password"
                 autoComplete="current-password"
                 onChange={onChangeHandler("password")}
+                error={requiredError}
+                helperText={requiredError ? "Password field is required" : null}
+                onFocus={() => setRequiredError(false)}
               />
             </Grid>
           </Grid>
@@ -158,13 +151,6 @@ export default function SignUp() {
             variant="contained"
             color="primary"
             className={classes.submit}
-            disabled={
-              !userData.firstName ||
-              !userData.lastName ||
-              !userData.email ||
-              !userData.password ||
-              !userData.companyName
-            }
           >
             Sign Up
           </Button>

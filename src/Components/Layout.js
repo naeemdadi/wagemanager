@@ -1,5 +1,13 @@
 import React from "react";
-import { Box, Link, makeStyles, Typography } from "@material-ui/core";
+import {
+  Box,
+  Link,
+  makeStyles,
+  Typography,
+  Container,
+} from "@material-ui/core";
+import { auth } from "../firebase";
+import MenuBar from "./MenuBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -13,6 +21,12 @@ const useStyles = makeStyles((theme) => {
     },
     avatar: {
       marginLeft: theme.spacing(2),
+    },
+    copyright: {
+      position: "absolute",
+      bottom: theme.spacing(5),
+      left: "50%",
+      transform: "translateX(-50%)",
     },
   };
 });
@@ -35,15 +49,18 @@ export default function Layout({ children }) {
   return (
     <div>
       {/* app bar */}
-      {/* <AppBar position="fixed" elevation={0} color="primary"></AppBar> */}
+      <MenuBar />
       {/* main content */}
-      <div className={classes.page}>
-        <div className={classes.toolbar}></div>
-        {children}
-      </div>
-      <Box mt={3}>
+      <Container>
+        <div className={classes.page}>
+          <div className={classes.toolbar}></div>
+          {children}
+        </div>
+        <div onClick={() => auth.signOut()}>Signout</div>
+        {/* <Box className={classes.copyright}>
         <Copyright />
-      </Box>
+      </Box> */}
+      </Container>
     </div>
   );
 }
