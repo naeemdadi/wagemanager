@@ -1,9 +1,8 @@
-import { Backdrop, CircularProgress, makeStyles } from "@material-ui/core";
-import { render } from "@testing-library/react";
 import { useEffect, useState } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import "./App.css";
 import Layout from "./Components/Layout";
+import Loading from "./Components/Loading";
 import PrivateRoute from "./Components/PrivateRoute";
 import { auth } from "./firebase";
 import EmployeeDetails from "./Screens/EmployeeDetails";
@@ -13,17 +12,7 @@ import NewEmployee from "./Screens/NewEmployee";
 import SignIn from "./Screens/SignIn";
 import SignUp from "./Screens/SignUp";
 
-const useStyles = makeStyles((theme) => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: "#fff",
-  },
-}));
-
 function App() {
-  const history = useHistory();
-  const classes = useStyles();
-
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,14 +31,10 @@ function App() {
 
   const renderPages = () => {
     if (loading) {
-      return (
-        <Backdrop className={classes.backdrop} open={loading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      );
+      return <Loading loading={loading} />;
     } else {
       return (
-        <Layout>
+        <Layout authUser={authUser}>
           <Switch>
             <PrivateRoute path="/" exact authUser={authUser} component={Home} />
             <PrivateRoute
@@ -70,8 +55,8 @@ function App() {
               authUser={authUser}
               component={EmployeeDetails}
             />
-            <Route path="/signin" exact component={SignIn} />
-            <Route path="/signup" exact component={SignUp} />
+            <Route path="/signin" exact render={() => authUser ? <Home/> : <SignIn /> } />
+            <Route path="/signup" exact render={() => authUser ? <Home/> : <SignUp /> } />
           </Switch>
         </Layout>
       );

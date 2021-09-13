@@ -1,6 +1,5 @@
 import {
   Button,
-  Container,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -10,16 +9,15 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { db } from "../firebase";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { format } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
   TextFieldContainer: {
@@ -89,10 +87,17 @@ export default function NewEmployee({ authUser }) {
   };
 
   const onChangeHandler = (input) => (e) => {
-    setData({
-      ...data,
-      [input]: e.target.value,
-    });
+    if ([input] === "firstName" || "middleName" || "lastName") {
+      setData({
+        ...data,
+        [input]: capitalizeFirstLetter(e.target.value),
+      });
+    } else {
+      setData({
+        ...data,
+        [input]: e.target.value,
+      });
+    }
   };
 
   const handleDateChange = (input) => (e) => {
@@ -137,6 +142,7 @@ export default function NewEmployee({ authUser }) {
               error && !data.firstName ? "First Name is Required Field" : null
             }
             onFocus={() => setError(false)}
+            // disabled
           />
           <TextField
             fullWidth
@@ -284,6 +290,7 @@ export default function NewEmployee({ authUser }) {
             onChange={handleDateChange("birthDate")}
           />
           <DatePicker
+            disableFuture
             format="dd/MM/yyyy"
             label="Joining Date"
             inputVariant="outlined"

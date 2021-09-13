@@ -74,8 +74,7 @@ export default function SignUp() {
           (authUser) =>
             authUser.user.updateProfile({
               displayName: userData.companyName,
-            }),
-          history.push("/")
+            })
         )
         .catch((error) => alert(error));
     }

@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => {
   return {
     page: {
       width: "100%",
-      padding: theme.spacing(3),
+      marginTop: theme.spacing(5),
     },
     toolbar: theme.mixins.toolbar,
     date: {
@@ -44,19 +44,16 @@ function Copyright() {
   );
 }
 
-export default function Layout({ children }) {
+export default function Layout({ children, authUser }) {
   const classes = useStyles();
   return (
     <div>
       {/* app bar */}
-      <MenuBar />
+      <MenuBar authUser={authUser} />
       {/* main content */}
       <Container>
-        <div className={classes.page}>
-          <div className={classes.toolbar}></div>
-          {children}
-        </div>
-        <div onClick={() => auth.signOut()}>Signout</div>
+        <div className={classes.page}>{children}</div>
+        {/* <div onClick={() => auth.signOut()}>Signout</div> */}
         {/* <Box className={classes.copyright}>
         <Copyright />
       </Box> */}

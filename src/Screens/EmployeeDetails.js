@@ -1,6 +1,6 @@
 import {
   Button,
-  Container,
+  Fab,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -8,269 +8,447 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
 import { db } from "../firebase";
+import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Loading from "../Components/Loading";
+import { Delete, Edit, Visibility } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
+  TextFieldContainer: {
+    display: "flex",
+    gap: theme.spacing(2),
+  },
   formField: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+  datePicker: {
+    marginRight: theme.spacing(2),
   },
 }));
 
-export default function NewEmployee(props) {
+export default function EmployeeDetails(props) {
   const classes = useStyles();
 
-  const [employeeData, setEmployeeData] = useState({});
+  const { authUser } = props;
 
-  const [firstName, setFirstName] = useState(
-    employeeData.firstName ? employeeData.firstName : ""
-  );
-  const [middleName, setMiddleName] = useState(
-    employeeData.middleName ? employeeData.middleName : ""
-  );
-  const [lastName, setLastName] = useState(
-    employeeData.lastName ? employeeData.lastName : ""
-  );
-  const [birthDate, setBirthDate] = useState(
-    employeeData.birthDate ? employeeData.birthDate : new Date()
-  );
-  const [joiningDate, setJoiningDate] = useState(
-    employeeData.joiningDate ? employeeData.joiningDate : new Date()
-  );
-  const [monthlyWages, setMonthlyWage] = useState(
-    employeeData.monthlyWages ? employeeData.monthlyWages : null
-  );
-  const [otRate, setOtRate] = useState(
-    employeeData.otRate ? employeeData.otRate : null
-  );
-  const [uniqueId, setUniqueId] = useState(
-    employeeData.uniqueId ? employeeData.uniqueId : ""
-  );
-  const [bankAccountNumber, setBankAccountNumber] = useState(
-    employeeData.bankAccountNumber ? employeeData.bankAccountNumber : null
-  );
-  const [ifscCode, setIfscCode] = useState(
-    employeeData.ifscCode ? employeeData.ifscCode : ""
-  );
-  const [pfNumber, setPfNumber] = useState(
-    employeeData.pfNumber ? employeeData.pfNumber : ""
-  );
-  const [workerCategory, setWorkerCategory] = useState(
-    employeeData.workerCategory ? employeeData.workerCategory : "Unskilled"
-  );
-  const [mobileNumber, setMobileNumber] = useState(
-    employeeData.mobileNumber ? employeeData.mobileNumber : null
-  );
+  // const initialvalue = {
+  //   firstName: "",
+  //   middleName: "",
+  //   lastName: "",
+  //   birthDate: new Date(),
+  //   joiningDate: new Date(),
+  //   monthlyWages: null,
+  //   otRate: null,
+  //   uniqueId: "",
+  //   bankAccountNumber: null,
+  //   ifscCode: "",
+  //   pfNumber: "",
+  //   workerCategory: "",
+  //   mobileNumber: null,
+  // };
 
-  console.log(firstName);
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
-    const employeeData = db
+    db.collection(authUser.uid)
+      .doc(authUser.displayName)
       .collection("employees")
       .doc(props.match.params.id)
-      .get();
+      .get()
+      .then((doc) => {
+        if (!doc.exists) {
+          return;
+        } else {
+          setData({
+            ...doc.data(),
+            birthDate: doc.data().birthDate.toDate(),
+            joiningDate: doc.data().joiningDate.toDate(),
+          });
+          setLoading(false);
+        }
+      });
+  }, [props, authUser]);
 
-    employeeData.then((doc) => {
-      if (!doc.exists) return;
-      setEmployeeData(doc.data());
+  const onUpdateHandler = (e) => {
+    e.preventDefault();
+
+    if (
+      !data.firstName ||
+      !data.middleName ||
+      !data.lastName ||
+      !data.birthDate ||
+      !data.joiningDate ||
+      !data.monthlyWages ||
+      !data.otRate ||
+      !data.bankAccountNumber ||
+      !data.ifscCode ||
+      !data.pfNumber ||
+      !data.workerCategory
+    ) {
+      setError(true);
+      return;
+    }
+
+    db.collection(authUser.uid)
+      .doc(authUser.displayName)
+      .collection("employees")
+      .doc(props.match.params.id)
+      .update(data)
+      .then(() => props.history.push("/employees"))
+      .catch((error) => alert(error));
+  };
+
+  const onChangeHandler = (input) => (e) => {
+    if ([input] === "firstName" || "middleName" || "lastName") {
+      setData({
+        ...data,
+        [input]: capitalizeFirstLetter(e.target.value),
+      });
+    } else {
+      setData({
+        ...data,
+        [input]: e.target.value,
+      });
+    }
+  };
+
+  const handleDateChange = (input) => (e) => {
+    setData({
+      ...data,
+      [input]: e,
     });
+  };
 
-    return () => employeeData();
-  }, [employeeData]);
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
-  //   const onSubmitHandler = (e) => {
-  //     e.preventDefault();
+  const onDeleteHandler = () => {
+    const isSure = window.confirm("Are you sure");
+    if (!isSure) {
+      return;
+    } else {
+      db.collection(authUser.uid)
+        .doc(authUser.displayName)
+        .collection("employees")
+        .doc(props.match.params.id)
+        .delete()
+        .then(() => props.history.push("/employees"))
+        .catch((error) => alert(error));
+    }
+  };
 
-  //     db.collection("employees")
-  //       .add({
-  //         firstName,
-  //         middleName,
-  //         lastName,
-  //         birthDate,
-  //         joiningDate,
-  //         monthlyWages,
-  //         otRate,
-  //         uniqueId,
-  //         bankAccountNumber,
-  //         ifscCode,
-  //         pfNumber,
-  //         workerCategory,
-  //         mobileNumber,
-  //       })
-  //       .then((ref) => {
-  //         console.log(ref.id);
-  //         history.push("/employees");
-  //       });
-  //   };
-
-  return (
-    <Container>
-      <Typography
-        variant="h6"
-        color="textSecondary"
-        component="h2"
-        gutterBottom
-      >
-        Add new Employee
-      </Typography>
-
-      <form
-        noValidate
-        autoComplete="off"
-        className={classes.form}
-        // onSubmit={onSubmitHandler}
-      >
-        <TextField
-          fullWidth
-          label="First Name"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          value={employeeData.firstName}
-          //   required
-          disabled
-          //   onChange={(e) => setFirstName(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Middle Name"
-          variant="outlined"
-          color="primary"
-          value={lastName}
-          className={classes.formField}
-          required
-          //   onChange={(e) => setMiddleName(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Last Name"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          //   onChange={(e) => setLastName(e.target.value)}
-        />
-
-        <TextField
-          fullWidth
-          label="Monthly Wages"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          //   onChange={(e) => setMonthlyWage(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="OT Rate"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          //   onChange={(e) => setOtRate(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Unique ID"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          onChange={(e) => setUniqueId(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Bank Account No"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          onChange={(e) => setBankAccountNumber(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="IFSC Code"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          onChange={(e) => setIfscCode(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="PF No"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          required
-          onChange={(e) => setPfNumber(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Mobile No"
-          variant="outlined"
-          color="primary"
-          className={classes.formField}
-          onChange={(e) => setMobileNumber(e.target.value)}
-        />
-        <TextField
-          id="date"
-          label="Birth Date"
-          type="date"
-          defaultValue="2000-05-24"
-          className={classes.formField}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={(e) => setBirthDate(e.target.value)}
-        />
-        <TextField
-          id="date"
-          label="Joining Date"
-          type="date"
-          defaultValue="2021-05-24"
-          className={classes.formField}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={(e) => setJoiningDate(e.target.value)}
-        />
-
-        <FormControl className={classes.formField}>
-          <FormLabel>Worker's Category</FormLabel>
-          <RadioGroup
-            value={workerCategory}
-            onChange={(e) => setWorkerCategory(e.target.value)}
+  const renderPages = () => {
+    if (loading) {
+      return <Loading loading={loading} />;
+    } else {
+      return (
+        <div>
+          <div
+            className={classes.TextFieldContainer}
+            style={{ alignItems: "center" }}
           >
-            <FormControlLabel
-              value="Skilled"
-              control={<Radio />}
-              label="Skilled"
-            />
-            <FormControlLabel
-              value="Semiskilled"
-              control={<Radio />}
-              label="Semi Skilled"
-            />
-            <FormControlLabel
-              value="Unskilled"
-              control={<Radio />}
-              label="Unskilled"
-            />
-          </RadioGroup>
-        </FormControl>
-        <Button type="submit" color="primary" variant="contained">
-          Update
-        </Button>
-      </form>
-    </Container>
-  );
+            <Typography
+              variant="h6"
+              color="textSecondary"
+              component="h2"
+              gutterBottom
+            >
+              Employee Details
+            </Typography>
+            {isDisabled ? (
+              <Tooltip title="Edit" aria-label="edit">
+                <Fab
+                  color="secondary"
+                  size="small"
+                  onClick={() => setIsDisabled(!isDisabled)}
+                >
+                  <Edit fontSize="small" />
+                </Fab>
+              </Tooltip>
+            ) : (
+              <Tooltip title="View" aria-label="view">
+                <Fab
+                  color="secondary"
+                  size="small"
+                  onClick={() => setIsDisabled(!isDisabled)}
+                >
+                  <Visibility fontSize="small" />
+                </Fab>
+              </Tooltip>
+            )}
+            {isDisabled ? (
+              <Tooltip title="Delete" aria-label="delete">
+                <Fab color="secondary" size="small" onClick={onDeleteHandler}>
+                  <Delete fontSize="small" />
+                </Fab>
+              </Tooltip>
+            ) : null}
+          </div>
+
+          <form
+            noValidate
+            autoComplete="off"
+            className={classes.form}
+            onSubmit={onUpdateHandler}
+          >
+            <div className={classes.TextFieldContainer}>
+              <TextField
+                fullWidth
+                label="First Name"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                required
+                onChange={onChangeHandler("firstName")}
+                error={error}
+                helperText={
+                  error && !data.firstName
+                    ? "First Name is Required Field"
+                    : null
+                }
+                value={data.firstName}
+                onFocus={() => setError(false)}
+                disabled={isDisabled}
+              />
+              <TextField
+                fullWidth
+                label="Middle Name"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                onChange={onChangeHandler("middleName")}
+                error={error}
+                value={data.middleName}
+                helperText={
+                  error && !data.middleName
+                    ? "Middle Name is Required Field"
+                    : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="Last Name"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                value={data.lastName}
+                required
+                onChange={onChangeHandler("lastName")}
+                error={error}
+                helperText={
+                  error && !data.lastName ? "Last Name is Required Field" : null
+                }
+                onFocus={() => setError(false)}
+              />
+            </div>
+
+            <div className={classes.TextFieldContainer}>
+              <TextField
+                fullWidth
+                label="Monthly Wages"
+                type="number"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                value={data.monthlyWages}
+                required
+                onChange={onChangeHandler("monthlyWages")}
+                error={error}
+                helperText={
+                  error && !data.monthlyWages
+                    ? "Monthly wage is Required Field"
+                    : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="OT Rate"
+                type="number"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                value={data.otRate}
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                onChange={onChangeHandler("otRate")}
+                error={error}
+                helperText={
+                  error && !data.otRate
+                    ? "Overtime Rate is Required Field"
+                    : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="Unique ID"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                value={data.uniqueId}
+                className={classes.formField}
+                disabled={isDisabled}
+                onChange={onChangeHandler("uniqueId")}
+              />
+            </div>
+
+            <div className={classes.TextFieldContainer}>
+              <TextField
+                fullWidth
+                label="Bank Account No"
+                variant={isDisabled ? "standard" : "outlined"}
+                type="number"
+                color="primary"
+                value={data.bankAccountNumber}
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                onChange={onChangeHandler("bankAccountNumber")}
+                error={error}
+                helperText={
+                  error && !data.bankAccountNumber
+                    ? "Bank Account number is Required Field"
+                    : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="IFSC Code"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                value={data.ifscCode}
+                onChange={onChangeHandler("ifscCode")}
+                error={error}
+                helperText={
+                  error && !data.ifscCode ? "IFSC code is Required Field" : null
+                }
+                onFocus={() => setError(false)}
+              />
+            </div>
+
+            <div className={classes.TextFieldContainer}>
+              <TextField
+                fullWidth
+                label="PF No"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                value={data.pfNumber}
+                onChange={onChangeHandler("pfNumber")}
+                error={error}
+                helperText={
+                  error && !data.pfNumber ? "PF number is Required Field" : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="Mobile No"
+                variant={isDisabled ? "standard" : "outlined"}
+                type="number"
+                color="primary"
+                value={data.mobileNumber}
+                className={classes.formField}
+                disabled={isDisabled}
+                onChange={onChangeHandler("mobileNumber")}
+              />
+            </div>
+
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DatePicker
+                disableFuture
+                openTo="year"
+                inputVariant={isDisabled ? "standard" : "outlined"}
+                format="dd/MM/yyyy"
+                label="Date of birth"
+                views={["year", "month", "date"]}
+                value={data.birthDate}
+                className={`${classes.formField} ${classes.datePicker}`}
+                disabled={isDisabled}
+                onChange={handleDateChange("birthDate")}
+              />
+              <DatePicker
+                disableFuture
+                format="dd/MM/yyyy"
+                label="Joining Date"
+                inputVariant={isDisabled ? "standard" : "outlined"}
+                views={["year", "month", "date"]}
+                value={data.joiningDate}
+                className={classes.formField}
+                disabled={isDisabled}
+                onChange={handleDateChange("joiningDate")}
+              />
+            </MuiPickersUtilsProvider>
+
+            <FormControl
+              className={classes.formField}
+              disabled={isDisabled}
+              style={{ display: "block" }}
+              variant={isDisabled ? "standard" : "outlined"}
+            >
+              <FormLabel>Worker's Category</FormLabel>
+              <RadioGroup
+                onChange={onChangeHandler("workerCategory")}
+                value={data.workerCategory}
+              >
+                <FormControlLabel
+                  value="Skilled"
+                  control={<Radio />}
+                  label="Skilled"
+                />
+                <FormControlLabel
+                  value="Semi skilled"
+                  control={<Radio />}
+                  label="Semi Skilled"
+                />
+                <FormControlLabel
+                  value="Unskilled"
+                  control={<Radio />}
+                  label="Unskilled"
+                />
+              </RadioGroup>
+            </FormControl>
+            {!isDisabled ? (
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                className={classes.formField}
+                size="large"
+              >
+                Update
+              </Button>
+            ) : null}
+          </form>
+        </div>
+      );
+    }
+  };
+
+  return renderPages();
 }
