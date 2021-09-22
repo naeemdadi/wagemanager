@@ -16,7 +16,7 @@ import { db } from "../firebase";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Loading from "../Components/Loading";
-import { Delete, Edit, ExitToApp, Visibility } from "@material-ui/icons";
+import { Edit, ExitToApp, Visibility } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   textFieldContainer: {
     display: "flex",
     gap: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+    },
   },
   formField: {
     marginTop: theme.spacing(1),

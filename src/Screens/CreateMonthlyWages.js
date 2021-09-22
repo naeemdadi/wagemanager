@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
   textFieldContainer: {
     display: "flex",
     gap: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+    },
   },
   formField: {
     marginTop: theme.spacing(1),
