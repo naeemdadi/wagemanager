@@ -1,10 +1,12 @@
 import {
+  Button,
   Card,
-  CardActions,
   CardContent,
   Fab,
   Grid,
   makeStyles,
+  MenuItem,
+  TextField,
   Tooltip,
   Typography,
 } from "@material-ui/core";
@@ -37,6 +39,16 @@ const useStyles = makeStyles((theme) => ({
   },
   parentContainer: {
     marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(8),
+  },
+  sortSelectField: {
+    width: theme.spacing(20),
+  },
+  sortButtonFields: {
+    display: "flex",
+    gap: theme.spacing(1),
+    justifyContent: "flex-end",
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -44,14 +56,26 @@ export default function Employees(props) {
   const history = useHistory();
   const classes = useStyles();
 
-  const { authUser } = props;
+  const { authUser, searchValue } = props;
 
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState("timestamp");
+  const [isDesc, setIsDesc] = useState(true);
+
+  const sortFields = [
+    "timestamp",
+    "firstName",
+    "middleName",
+    "lastName",
+    "dailyWages",
+    "otRate",
+  ];
 
   useEffect(() => {
     const unsubscribe = db
       .collection(`${authUser.uid}/${authUser.displayName}/employees`)
+      .orderBy(sortOption, isDesc ? "desc" : "asc")
       .onSnapshot((snapshot) => {
         setEmployees(
           snapshot.docs.map((doc) => {
@@ -64,94 +88,173 @@ export default function Employees(props) {
       });
     setLoading(false);
     return () => unsubscribe();
-  }, [authUser]);
+  }, [authUser, sortOption, isDesc]);
+
+  const filteredEmployees =
+    employees &&
+    employees.filter((employee) => {
+      const {
+        firstName,
+        lastName,
+        middleName,
+        dailyWages,
+        otRate,
+        bankAccountNumber,
+        ifscCode,
+        mobileNumber,
+        pfNumber,
+        uniqueId,
+        workerCategory,
+      } = employee;
+
+      if (
+        firstName?.toLowerCase().includes(searchValue) ||
+        lastName?.toLowerCase().includes(searchValue) ||
+        middleName?.toLowerCase().includes(searchValue) ||
+        dailyWages?.includes(searchValue) ||
+        otRate?.includes(searchValue) ||
+        bankAccountNumber?.toLowerCase().includes(searchValue) ||
+        ifscCode?.toLowerCase().toLowerCase().includes(searchValue) ||
+        mobileNumber?.includes(searchValue) ||
+        pfNumber?.toLowerCase().includes(searchValue) ||
+        uniqueId?.toLowerCase().includes(searchValue) ||
+        workerCategory?.toLowerCase().includes(searchValue)
+      ) {
+        return employee;
+      }
+      return false;
+    });
 
   const renderPages = () => {
-    if(!loading) {
-      if(employees.length === 0) {
-        return <React.Fragment><Tooltip title="Add New Employee" aria-label="add">
-        <Fab
-          color="secondary"
-          className={classes.absolute}
-          size="large"
-          onClick={() => history.push("/employees/add")}
-        >
-          <AddRounded fontSize="large" />
-        </Fab>
-      </Tooltip>
-      <Typography
-        variant="h6"
-        color="textSecondary"
-        component="h2"
-        gutterBottom
-        align="center"
-      >
-        Please Add some Employees!
-      </Typography>
-      </React.Fragment>
+    if (!loading) {
+      if (employees.length === 0) {
+        return (
+          <React.Fragment>
+            <Tooltip title="Add New Employee" aria-label="add">
+              <Fab
+                color="secondary"
+                className={classes.absolute}
+                size="large"
+                onClick={() => history.push("/employees/add")}
+              >
+                <AddRounded fontSize="large" />
+              </Fab>
+            </Tooltip>
+            <Typography
+              variant="h4"
+              color="textSecondary"
+              component="h2"
+              gutterBottom
+              align="center"
+            >
+              Please Add some Employees!
+            </Typography>
+          </React.Fragment>
+        );
       } else {
-        return <React.Fragment>
-      <Typography
-        variant="h6"
-        color="textSecondary"
-        component="h2"
-        gutterBottom
-      >
-        Employees
-      </Typography>
-      <Grid container spacing={4} className={classes.parentContainer}>
-        {/* <Grid item md={3} sm={6} xs={12}>
-          <Card
-            onClick={() => history.push("/employees/add")}
-            className={classes.card}
-          >
-            <CardContent align="center">
-              <Typography variant="body2" color="textSecondary" align="center">
-              <AddCircleOutlineRounded style={{ fontSize: 48 }} />
+        return (
+          <React.Fragment>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography
+                variant="h4"
+                color="textSecondary"
+                component="h2"
+                gutterBottom
+              >
+                Employees
               </Typography>
-            </CardContent>
-          </Card>
-        </Grid> */}
-        {employees.map((employee) => (
-          <Grid key={employee.id} item md={3} sm={6} xs={12}>
-            <Card className={classes.card} key={employee.id}>
-              <CardContent>
-                <Typography variant="h5" color="textSecondary">
-                  {`${employee.firstName} ${employee.middleName[0]}. ${employee.lastName}`}
-                </Typography>
-                <Grid container spacing={6}>
-                  <Grid item>
-                    <Typography variant="body2" color="textSecondary">
-                      {employee.workerCategory}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="body2" color="textSecondary">
-                      {employee.monthlyWages}
-                    </Typography>
-                  </Grid>
+              <TextField
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                select
+                label="Sort by"
+                variant="outlined"
+                className={classes.sortSelectField}
+              >
+                {sortFields.map((field) => {
+                  let val = field.replace(/([a-z])([A-Z])/g, "$1 $2");
+                  let finalVal = val.charAt(0).toUpperCase() + val.slice(1);
+                  return (
+                    <MenuItem key={field} value={field}>
+                      {field === "timestamp" ? "Added Date" : finalVal}
+                    </MenuItem>
+                  );
+                })}
+              </TextField>
+            </div>
+            <div className={classes.sortButtonFields}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="medium"
+                onClick={(e) => setIsDesc(false)}
+              >
+                Sort By Asc
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="medium"
+                onClick={(e) => setIsDesc(true)}
+              >
+                Sort by Desc
+              </Button>
+            </div>
+            <Grid container spacing={4} className={classes.parentContainer}>
+              {filteredEmployees.map((employee) => (
+                <Grid key={employee.id} item md={3} sm={6} xs={12}>
+                  <Card className={classes.card} key={employee.id}>
+                    <CardContent>
+                      <Typography variant="h5" color="textSecondary">
+                        {`${employee.firstName} ${employee.middleName[0]}. ${employee.lastName}`}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {employee.workerCategory}
+                      </Typography>
+                      <div style={{ display: "flex", gap: 16 }}>
+                        <Typography variant="body2" color="textSecondary">
+                          Wages: {employee.dailyWages}
+                        </Typography>
+                        {employee.isExited ? (
+                          <Typography variant="body2" color="secondary">
+                            Exited
+                          </Typography>
+                        ) : null}
+                      </div>
+                      <Tooltip title="View">
+                        <Fab
+                          color="secondary"
+                          className={classes.cardAction}
+                          size="small"
+                          onClick={() =>
+                            history.push(`/employees/${employee.id}`)
+                          }
+                        >
+                          <Visibility fontSize="small" />
+                        </Fab>
+                      </Tooltip>
+                    </CardContent>
+                  </Card>
                 </Grid>
-                <Tooltip title="View">
-                  <Fab
-                    color="secondary"
-                    className={classes.cardAction}
-                    size="small"
-                    onClick={() => history.push(`/employees/${employee.id}`)}
-                  >
-                    <Visibility fontSize="small" />
-                  </Fab>
-                </Tooltip>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      </React.Fragment>
+              ))}
+            </Grid>
+            <Tooltip title="Add New Employee" aria-label="add">
+              <Fab
+                color="secondary"
+                className={classes.absolute}
+                size="large"
+                onClick={() => history.push("/employees/add")}
+              >
+                <AddRounded fontSize="large" />
+              </Fab>
+            </Tooltip>
+          </React.Fragment>
+        );
       }
     } else {
-      return <Loading loading={loading} />
+      return <Loading loading={loading} />;
     }
-  }
+  };
 
   return renderPages();
 }

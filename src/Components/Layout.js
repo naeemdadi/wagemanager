@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  Box,
   Link,
   makeStyles,
   Typography,
   Container,
+  Box,
 } from "@material-ui/core";
-import { auth } from "../firebase";
+import { Link as RouterLink } from "react-router-dom";
 import MenuBar from "./MenuBar";
 
 const useStyles = makeStyles((theme) => {
@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => {
     page: {
       width: "100%",
       marginTop: theme.spacing(5),
+      minHeight: "90vh",
     },
     toolbar: theme.mixins.toolbar,
     date: {
@@ -23,10 +24,7 @@ const useStyles = makeStyles((theme) => {
       marginLeft: theme.spacing(2),
     },
     copyright: {
-      position: "absolute",
-      bottom: theme.spacing(5),
-      left: "50%",
-      transform: "translateX(-50%)",
+      marginBottom: theme.spacing(3),
     },
   };
 });
@@ -35,7 +33,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="/">
+      <Link component={RouterLink} color="inherit" to="/">
         WagesManager
       </Link>{" "}
       {new Date().getFullYear()}
@@ -44,19 +42,20 @@ function Copyright() {
   );
 }
 
-export default function Layout({ children, authUser }) {
+export default function Layout(props) {
   const classes = useStyles();
+  const { children, authUser, searchHandler } = props;
   return (
     <div>
       {/* app bar */}
-      <MenuBar authUser={authUser} />
+      <MenuBar authUser={authUser} searchHandler={searchHandler} />
+
       {/* main content */}
       <Container>
         <div className={classes.page}>{children}</div>
-        {/* <div onClick={() => auth.signOut()}>Signout</div> */}
-        {/* <Box className={classes.copyright}>
-        <Copyright />
-      </Box> */}
+        <Box className={classes.copyright}>
+          <Copyright />
+        </Box>
       </Container>
     </div>
   );

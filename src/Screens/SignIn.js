@@ -64,7 +64,6 @@ export default function SignIn() {
   };
 
   const [remember, setRemember] = useState(false);
-  // const pathname = history.location.state.pathname;
 
   const signInHandler = (e) => {
     e.preventDefault();
@@ -88,6 +87,18 @@ export default function SignIn() {
           .catch((error) => alert(error));
       }
     }
+  };
+
+  const passwordReset = () => {
+    if (!validateEmail(userData.email)) {
+      setIsEmailError(true);
+      return;
+    }
+
+    auth
+      .sendPasswordResetEmail(userData.email)
+      .then(() => alert("Please check your mails"))
+      .catch((err) => alert(err));
   };
 
   return (
@@ -154,7 +165,7 @@ export default function SignIn() {
             <Grid item xs>
               <Link
                 variant="body2"
-                onClick={() => history.push("/")}
+                onClick={passwordReset}
                 className={classes.link}
               >
                 Forgot password?

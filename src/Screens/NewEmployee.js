@@ -9,11 +9,12 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router";
 import { db } from "../firebase";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import firebase from "firebase";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -43,7 +44,7 @@ export default function NewEmployee({ authUser }) {
     lastName: "",
     birthDate: new Date(),
     joiningDate: new Date(),
-    monthlyWages: null,
+    dailyWages: null,
     otRate: null,
     uniqueId: "",
     bankAccountNumber: null,
@@ -65,7 +66,7 @@ export default function NewEmployee({ authUser }) {
       !data.lastName ||
       !data.birthDate ||
       !data.joiningDate ||
-      !data.monthlyWages ||
+      !data.dailyWages ||
       !data.otRate ||
       !data.bankAccountNumber ||
       !data.ifscCode ||
@@ -79,7 +80,10 @@ export default function NewEmployee({ authUser }) {
     db.collection(authUser.uid)
       .doc(authUser.displayName)
       .collection("employees")
-      .add(data)
+      .add({
+        ...data,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      })
       .then(() => {
         setData({});
         history.push("/employees");
@@ -137,12 +141,11 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("firstName")}
-            error={error}
+            error={error && !data.firstName}
             helperText={
               error && !data.firstName ? "First Name is Required Field" : null
             }
             onFocus={() => setError(false)}
-            // disabled
           />
           <TextField
             fullWidth
@@ -152,7 +155,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("middleName")}
-            error={error}
+            error={error && !data.middleName}
             helperText={
               error && !data.middleName ? "Middle Name is Required Field" : null
             }
@@ -166,7 +169,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("lastName")}
-            error={error}
+            error={error && !data.lastName}
             helperText={
               error && !data.lastName ? "Last Name is Required Field" : null
             }
@@ -177,18 +180,16 @@ export default function NewEmployee({ authUser }) {
         <div className={classes.TextFieldContainer}>
           <TextField
             fullWidth
-            label="Monthly Wages"
+            label="Daily Wages"
             type="number"
             variant="outlined"
             color="primary"
             className={classes.formField}
             required
-            onChange={onChangeHandler("monthlyWages")}
-            error={error}
+            onChange={onChangeHandler("dailyWages")}
+            error={error && !data.dailyWages}
             helperText={
-              error && !data.monthlyWages
-                ? "Monthly wage is Required Field"
-                : null
+              error && !data.dailyWages ? "Daily wage is Required Field" : null
             }
             onFocus={() => setError(false)}
           />
@@ -201,7 +202,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("otRate")}
-            error={error}
+            error={error && !data.otRate}
             helperText={
               error && !data.otRate ? "Overtime Rate is Required Field" : null
             }
@@ -227,7 +228,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("bankAccountNumber")}
-            error={error}
+            error={error && !data.bankAccountNumber}
             helperText={
               error && !data.bankAccountNumber
                 ? "Bank Account number is Required Field"
@@ -243,7 +244,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("ifscCode")}
-            error={error}
+            error={error && !data.ifscCode}
             helperText={
               error && !data.ifscCode ? "IFSC code is Required Field" : null
             }
@@ -260,7 +261,7 @@ export default function NewEmployee({ authUser }) {
             className={classes.formField}
             required
             onChange={onChangeHandler("pfNumber")}
-            error={error}
+            error={error && !data.pfNumber}
             helperText={
               error && !data.pfNumber ? "PF number is Required Field" : null
             }

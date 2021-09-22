@@ -16,14 +16,14 @@ import { db } from "../firebase";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Loading from "../Components/Loading";
-import { Delete, Edit, Visibility } from "@material-ui/icons";
+import { Delete, Edit, ExitToApp, Visibility } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
-  TextFieldContainer: {
+  textFieldContainer: {
     display: "flex",
     gap: theme.spacing(2),
   },
@@ -40,22 +40,6 @@ export default function EmployeeDetails(props) {
   const classes = useStyles();
 
   const { authUser } = props;
-
-  // const initialvalue = {
-  //   firstName: "",
-  //   middleName: "",
-  //   lastName: "",
-  //   birthDate: new Date(),
-  //   joiningDate: new Date(),
-  //   monthlyWages: null,
-  //   otRate: null,
-  //   uniqueId: "",
-  //   bankAccountNumber: null,
-  //   ifscCode: "",
-  //   pfNumber: "",
-  //   workerCategory: "",
-  //   mobileNumber: null,
-  // };
 
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -91,7 +75,7 @@ export default function EmployeeDetails(props) {
       !data.lastName ||
       !data.birthDate ||
       !data.joiningDate ||
-      !data.monthlyWages ||
+      !data.dailyWages ||
       !data.otRate ||
       !data.bankAccountNumber ||
       !data.ifscCode ||
@@ -137,7 +121,9 @@ export default function EmployeeDetails(props) {
   }
 
   const onDeleteHandler = () => {
-    const isSure = window.confirm("Are you sure");
+    const isSure = window.confirm(
+      `Are you sure you want to mark exit of ${data.firstName} ${data.lastName}?`
+    );
     if (!isSure) {
       return;
     } else {
@@ -145,7 +131,7 @@ export default function EmployeeDetails(props) {
         .doc(authUser.displayName)
         .collection("employees")
         .doc(props.match.params.id)
-        .delete()
+        .update({ isExited: true })
         .then(() => props.history.push("/employees"))
         .catch((error) => alert(error));
     }
@@ -158,7 +144,7 @@ export default function EmployeeDetails(props) {
       return (
         <div>
           <div
-            className={classes.TextFieldContainer}
+            className={classes.textFieldContainer}
             style={{ alignItems: "center" }}
           >
             <Typography
@@ -191,9 +177,9 @@ export default function EmployeeDetails(props) {
               </Tooltip>
             )}
             {isDisabled ? (
-              <Tooltip title="Delete" aria-label="delete">
+              <Tooltip title="Mark Exit" aria-label="delete">
                 <Fab color="secondary" size="small" onClick={onDeleteHandler}>
-                  <Delete fontSize="small" />
+                  <ExitToApp size="small" />
                 </Fab>
               </Tooltip>
             ) : null}
@@ -205,7 +191,7 @@ export default function EmployeeDetails(props) {
             className={classes.form}
             onSubmit={onUpdateHandler}
           >
-            <div className={classes.TextFieldContainer}>
+            <div className={classes.textFieldContainer}>
               <TextField
                 fullWidth
                 label="First Name"
@@ -260,22 +246,22 @@ export default function EmployeeDetails(props) {
               />
             </div>
 
-            <div className={classes.TextFieldContainer}>
+            <div className={classes.textFieldContainer}>
               <TextField
                 fullWidth
-                label="Monthly Wages"
+                label="Daily Wages"
                 type="number"
                 variant={isDisabled ? "standard" : "outlined"}
                 color="primary"
                 className={classes.formField}
                 disabled={isDisabled}
-                value={data.monthlyWages}
+                value={data.dailyWages}
                 required
-                onChange={onChangeHandler("monthlyWages")}
+                onChange={onChangeHandler("dailyWages")}
                 error={error}
                 helperText={
-                  error && !data.monthlyWages
-                    ? "Monthly wage is Required Field"
+                  error && !data.dailyWages
+                    ? "Daily wage is Required Field"
                     : null
                 }
                 onFocus={() => setError(false)}
@@ -311,7 +297,7 @@ export default function EmployeeDetails(props) {
               />
             </div>
 
-            <div className={classes.TextFieldContainer}>
+            <div className={classes.textFieldContainer}>
               <TextField
                 fullWidth
                 label="Bank Account No"
@@ -349,7 +335,7 @@ export default function EmployeeDetails(props) {
               />
             </div>
 
-            <div className={classes.TextFieldContainer}>
+            <div className={classes.textFieldContainer}>
               <TextField
                 fullWidth
                 label="PF No"
