@@ -59,7 +59,7 @@ export default function Employees(props) {
   const { authUser, searchValue } = props;
 
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [sortOption, setSortOption] = useState("timestamp");
   const [isDesc, setIsDesc] = useState(true);
 
@@ -73,6 +73,7 @@ export default function Employees(props) {
   ];
 
   useEffect(() => {
+    setLoading(true);
     const unsubscribe = db
       .collection(`${authUser.uid}/${authUser.displayName}/employees`)
       .orderBy(sortOption, isDesc ? "desc" : "asc")

@@ -1,5 +1,6 @@
+import { Link, Typography } from "@material-ui/core";
 import React from "react";
-import { Redirect, Route } from "react-router-dom";
+import { Route, Link as RouterLink } from "react-router-dom";
 
 const PrivateRoute = ({
   component: Component,
@@ -18,7 +19,19 @@ const PrivateRoute = ({
             searchValue={searchValue}
           ></Component>
         ) : (
-          <Redirect to="/signin" />
+          // <Redirect to={props.history.location.pathname} />
+          <Typography
+            variant="h4"
+            color="textSecondary"
+            component="h2"
+            gutterBottom
+            align="center"
+          >
+            Please{" "}
+            <Link component={RouterLink} to="/signin">
+              SignIn
+            </Link>
+          </Typography>
         )
       }
     ></Route>

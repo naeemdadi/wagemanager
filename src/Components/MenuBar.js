@@ -7,7 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import { Tooltip } from "@material-ui/core";
-import { PeopleAltRounded, ExitToApp } from "@material-ui/icons";
+import { PeopleAltRounded, ExitToApp, AccountCircle } from "@material-ui/icons";
 import { useHistory } from "react-router";
 import { auth } from "../firebase";
 
@@ -67,6 +67,11 @@ export default function PrimarySearchAppBar({ authUser, searchHandler }) {
   const classes = useStyles();
   const history = useHistory();
 
+  const signOutHandler = () => {
+    history.push("/signin");
+    auth.signOut();
+  };
+
   return (
     <div className={classes.grow}>
       <AppBar position="static">
@@ -114,12 +119,22 @@ export default function PrimarySearchAppBar({ authUser, searchHandler }) {
                 <IconButton
                   aria-label="signout"
                   color="inherit"
-                  onClick={() => auth.signOut()}
+                  onClick={signOutHandler}
                 >
                   <ExitToApp fontSize="large" />
                 </IconButton>
               </Tooltip>
-            ) : null}
+            ) : (
+              <Tooltip title="SignIn">
+                <IconButton
+                  aria-label="signout"
+                  color="inherit"
+                  onClick={() => history.push("/signin")}
+                >
+                  <AccountCircle fontSize="large" />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         </Toolbar>
       </AppBar>

@@ -158,17 +158,7 @@ export default function EmployeeDetails(props) {
             >
               Employee Details
             </Typography>
-            {isDisabled ? (
-              <Tooltip title="Edit" aria-label="edit">
-                <Fab
-                  color="secondary"
-                  size="small"
-                  onClick={() => setIsDisabled(!isDisabled)}
-                >
-                  <Edit fontSize="small" />
-                </Fab>
-              </Tooltip>
-            ) : (
+            {!isDisabled ? (
               <Tooltip title="View" aria-label="view">
                 <Fab
                   color="secondary"
@@ -176,6 +166,16 @@ export default function EmployeeDetails(props) {
                   onClick={() => setIsDisabled(!isDisabled)}
                 >
                   <Visibility fontSize="small" />
+                </Fab>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Edit" aria-label="edit">
+                <Fab
+                  color="secondary"
+                  size="small"
+                  onClick={() => setIsDisabled(!isDisabled)}
+                >
+                  <Edit fontSize="small" />
                 </Fab>
               </Tooltip>
             )}

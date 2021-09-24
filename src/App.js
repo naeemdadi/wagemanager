@@ -22,7 +22,7 @@ function App() {
 
   useEffect(() => {
     setLoading(true);
-    const unsbscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setAuthUser(user);
         setLoading(false);
@@ -31,7 +31,7 @@ function App() {
         setLoading(false);
       }
     });
-    return () => unsbscribe();
+    return () => unsubscribe();
   }, []);
 
   const onSearchInputHandler = (e) => {
@@ -49,7 +49,6 @@ function App() {
               path="/signin"
               exact
               render={() => (authUser ? <Redirect to="/" /> : <SignIn />)}
-              // component={SignIn}
             />
             <Route
               path="/signup"
