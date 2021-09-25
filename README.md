@@ -1,3 +1,28 @@
+# WagesManager
+
+WagesManager is a wage management tool for the small enterprises. With WagesManager companies can register themselves and than can add as many employees as they have with data like name, PF Number, Daily Wage, OT, Bank Account Number etc. Then companies can create monthly wages calculations by adding monthly present days and Overtime hours to respective month with all the available employees. Companies can mark exit of an employee anytime with that they won't loose previous data of an employee. But with new month entry they won't see the exited employees.
+After adding monhly details companies can see full monthly wages data as a table format anytime as well as export the same data as an excel sheet. For future improvement we can add more functionality related to employees PF, PT and automated salary slips as well. This tool is created with firebase and is completely scalable.
+
+## Live Demo
+
+https://wagemanager-d9d38.web.app
+
+## Test Credientials
+
+Email Address: test@gmail.com
+Password: test123
+
+## Technologies Used
+
+- ReactJs
+- Firebase Firestore
+- Firebase Authantication
+- Material UI
+- Firebase Hosting
+- React Router
+- Material Date Picker
+- xlsx for excel conversion
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

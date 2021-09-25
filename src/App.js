@@ -5,6 +5,7 @@ import Layout from "./Components/Layout";
 import Loading from "./Components/Loading";
 import PrivateRoute from "./Components/PrivateRoute";
 import { auth } from "./firebase";
+import BadRequest from "./Screens/BadRequest";
 import CreateMonthlyWages from "./Screens/CreateMonthlyWages";
 import EmployeeDetails from "./Screens/EmployeeDetails";
 import Employees from "./Screens/Employees";
@@ -101,6 +102,7 @@ function App() {
               component={WagesSheet}
               searchValue={searchInput}
             />
+            <Route component={BadRequest} />
           </Switch>
         </Layout>
       );
