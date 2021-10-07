@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(4),
   },
-  absolute: {
-    position: "absolute",
+  fixed: {
+    position: "fixed",
     bottom: theme.spacing(6),
     right: theme.spacing(8),
   },
@@ -134,7 +134,7 @@ export default function Employees(props) {
             <Tooltip title="Add New Employee" aria-label="add">
               <Fab
                 color="secondary"
-                className={classes.absolute}
+                className={classes.fixed}
                 size="large"
                 onClick={() => history.push("/employees/add")}
               >
@@ -242,7 +242,7 @@ export default function Employees(props) {
             <Tooltip title="Add New Employee" aria-label="add">
               <Fab
                 color="secondary"
-                className={classes.absolute}
+                className={classes.fixed}
                 size="large"
                 onClick={() => history.push("/employees/add")}
               >
