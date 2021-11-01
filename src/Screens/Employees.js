@@ -127,10 +127,9 @@ export default function Employees(props) {
     });
 
   const renderPages = () => {
-    if (loading || employees.length === 0) {
+    if (loading) {
       return <Loading loading={loading} />;
-    }
-    if (!loading && employees.length === 0) {
+    } else if (!loading && employees.length === 0) {
       return (
         <React.Fragment>
           <Tooltip title="Add New Employee" aria-label="add">
@@ -154,8 +153,7 @@ export default function Employees(props) {
           </Typography>
         </React.Fragment>
       );
-    }
-    if (!loading && employees.length !== 0) {
+    } else {
       return (
         <React.Fragment>
           <div style={{ display: "flex", justifyContent: "space-between" }}>

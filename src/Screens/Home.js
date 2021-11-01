@@ -95,10 +95,9 @@ export default function Home(props) {
   }, [authUser, isDesc, sortOption]);
 
   const renderPages = () => {
-    if (loading || monthlyData.length === 0) {
+    if (loading) {
       return <Loading loading={loading} />;
-    }
-    if (!loading && monthlyData.length === 0) {
+    } else if (!loading && monthlyData.length === 0) {
       return (
         <>
           <Tooltip title="Add New Employee" aria-label="add">
@@ -122,8 +121,7 @@ export default function Home(props) {
           </Typography>
         </>
       );
-    }
-    if (!loading && monthlyData.length !== 0) {
+    } else {
       return (
         <>
           <div style={{ display: "flex", justifyContent: "space-between" }}>

@@ -86,20 +86,22 @@ export default function PrimarySearchAppBar({ authUser, searchHandler }) {
           >
             {authUser ? authUser.displayName : "WagesManager"}
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
+          {authUser && (
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ "aria-label": "search" }}
+                onChange={searchHandler}
+              />
             </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search" }}
-              onChange={searchHandler}
-            />
-          </div>
+          )}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             {authUser ? (
