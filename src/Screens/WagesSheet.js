@@ -84,7 +84,7 @@ export default function WagesSheet(props) {
       minWages = 341;
     }
 
-    const monthlyBasic = minWages * emp.workingDays;
+    const monthlyBasic = (minWages * emp.workingDays).toFixed(2);
     const otAmt = currEmp.otRate * emp.otHours;
     const pf = (monthlyBasic * 12) / 100;
     const wellAll = emp.workingDays * currEmp.dailyWages - monthlyBasic;
