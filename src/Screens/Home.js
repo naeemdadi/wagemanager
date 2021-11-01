@@ -95,121 +95,121 @@ export default function Home(props) {
   }, [authUser, isDesc, sortOption]);
 
   const renderPages = () => {
-    if (!loading) {
-      if (monthlyData.length === 0) {
-        return (
-          <React.Fragment>
-            <Tooltip title="Add New Employee" aria-label="add">
-              <Fab
-                color="secondary"
-                className={classes.fixed}
-                size="large"
-                onClick={() => props.history.push("/create")}
-              >
-                <AddRounded fontSize="large" />
-              </Fab>
-            </Tooltip>
+    if (loading || monthlyData.length === 0) {
+      return <Loading loading={loading} />;
+    }
+    if (!loading && monthlyData.length === 0) {
+      return (
+        <>
+          <Tooltip title="Add New Employee" aria-label="add">
+            <Fab
+              color="secondary"
+              className={classes.fixed}
+              size="large"
+              onClick={() => props.history.push("/create")}
+            >
+              <AddRounded fontSize="large" />
+            </Fab>
+          </Tooltip>
+          <Typography
+            variant="h4"
+            color="textSecondary"
+            component="h2"
+            gutterBottom
+            align="center"
+          >
+            Add Monthly Data!
+          </Typography>
+        </>
+      );
+    }
+    if (!loading && monthlyData.length !== 0) {
+      return (
+        <>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Typography
               variant="h4"
               color="textSecondary"
               component="h2"
               gutterBottom
-              align="center"
             >
-              Add Monthly Data!
+              Monthly Data
             </Typography>
-          </React.Fragment>
-        );
-      } else {
-        return (
-          <React.Fragment>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography
-                variant="h4"
-                color="textSecondary"
-                component="h2"
-                gutterBottom
-              >
-                Monthly Data
-              </Typography>
-              <TextField
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                select
-                label="Sort by"
-                variant="outlined"
-                className={classes.sortSelectField}
-              >
-                {sortFields.map((field) => {
-                  let val = field.replace(/([a-z])([A-Z])/g, "$1 $2");
-                  let finalVal = val.charAt(0).toUpperCase() + val.slice(1);
-                  return (
-                    <MenuItem key={field} value={field}>
-                      {field === "timestamp" ? "Added Date" : finalVal}
-                    </MenuItem>
-                  );
-                })}
-              </TextField>
-            </div>
-            <div className={classes.sortButtonFields}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                onClick={(e) => setIsDesc(false)}
-              >
-                Sort By Asc
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                onClick={(e) => setIsDesc(true)}
-              >
-                Sort by Desc
-              </Button>
-            </div>
-            <Grid container spacing={4} className={classes.parentContainer}>
-              {filteredMonths.map((data) => (
-                <Grid key={data.id} item md={3} sm={6} xs={12}>
-                  <Card className={classes.card}>
-                    <CardContent>
-                      <Typography variant="h5" color="textSecondary">
-                        {data.month}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {data.year}
-                      </Typography>
-                      <Tooltip title="View">
-                        <Fab
-                          color="secondary"
-                          className={classes.cardAction}
-                          size="small"
-                          onClick={() => props.history.push(`/${data.id}`)}
-                        >
-                          <Visibility fontSize="small" />
-                        </Fab>
-                      </Tooltip>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-            <Tooltip title="Add New Employee" aria-label="add">
-              <Fab
-                color="secondary"
-                className={classes.fixed}
-                size="large"
-                onClick={() => props.history.push("/create")}
-              >
-                <AddRounded fontSize="large" />
-              </Fab>
-            </Tooltip>
-          </React.Fragment>
-        );
-      }
-    } else {
-      return <Loading loading={loading} />;
+            <TextField
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              select
+              label="Sort by"
+              variant="outlined"
+              className={classes.sortSelectField}
+            >
+              {sortFields.map((field) => {
+                let val = field.replace(/([a-z])([A-Z])/g, "$1 $2");
+                let finalVal = val.charAt(0).toUpperCase() + val.slice(1);
+                return (
+                  <MenuItem key={field} value={field}>
+                    {field === "timestamp" ? "Added Date" : finalVal}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
+          </div>
+          <div className={classes.sortButtonFields}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="medium"
+              onClick={(e) => setIsDesc(false)}
+            >
+              Sort By Asc
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="medium"
+              onClick={(e) => setIsDesc(true)}
+            >
+              Sort by Desc
+            </Button>
+          </div>
+          <Grid container spacing={4} className={classes.parentContainer}>
+            {filteredMonths.map((data) => (
+              <Grid key={data.id} item md={3} sm={6} xs={12}>
+                <Card className={classes.card}>
+                  <CardContent>
+                    <Typography variant="h5" color="textSecondary">
+                      {data.month}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {data.year}
+                    </Typography>
+                    <Tooltip title="View">
+                      <Fab
+                        color="secondary"
+                        className={classes.cardAction}
+                        size="small"
+                        onClick={() => props.history.push(`/${data.id}`)}
+                      >
+                        <Visibility fontSize="small" />
+                      </Fab>
+                    </Tooltip>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Tooltip title="Add New Employee" aria-label="add">
+            <Fab
+              color="secondary"
+              className={classes.fixed}
+              size="large"
+              onClick={() => props.history.push("/create")}
+            >
+              <AddRounded fontSize="large" />
+            </Fab>
+          </Tooltip>
+        </>
+      );
     }
   };
 

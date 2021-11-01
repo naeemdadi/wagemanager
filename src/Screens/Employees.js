@@ -127,133 +127,133 @@ export default function Employees(props) {
     });
 
   const renderPages = () => {
-    if (!loading) {
-      if (employees.length === 0) {
-        return (
-          <React.Fragment>
-            <Tooltip title="Add New Employee" aria-label="add">
-              <Fab
-                color="secondary"
-                className={classes.fixed}
-                size="large"
-                onClick={() => history.push("/employees/add")}
-              >
-                <AddRounded fontSize="large" />
-              </Fab>
-            </Tooltip>
+    if (loading || employees.length === 0) {
+      return <Loading loading={loading} />;
+    }
+    if (!loading && employees.length === 0) {
+      return (
+        <React.Fragment>
+          <Tooltip title="Add New Employee" aria-label="add">
+            <Fab
+              color="secondary"
+              className={classes.fixed}
+              size="large"
+              onClick={() => history.push("/employees/add")}
+            >
+              <AddRounded fontSize="large" />
+            </Fab>
+          </Tooltip>
+          <Typography
+            variant="h4"
+            color="textSecondary"
+            component="h2"
+            gutterBottom
+            align="center"
+          >
+            Please Add some Employees!
+          </Typography>
+        </React.Fragment>
+      );
+    }
+    if (!loading && employees.length !== 0) {
+      return (
+        <React.Fragment>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Typography
               variant="h4"
               color="textSecondary"
               component="h2"
               gutterBottom
-              align="center"
             >
-              Please Add some Employees!
+              Employees
             </Typography>
-          </React.Fragment>
-        );
-      } else {
-        return (
-          <React.Fragment>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography
-                variant="h4"
-                color="textSecondary"
-                component="h2"
-                gutterBottom
-              >
-                Employees
-              </Typography>
-              <TextField
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                select
-                label="Sort by"
-                variant="outlined"
-                className={classes.sortSelectField}
-              >
-                {sortFields.map((field) => {
-                  let val = field.replace(/([a-z])([A-Z])/g, "$1 $2");
-                  let finalVal = val.charAt(0).toUpperCase() + val.slice(1);
-                  return (
-                    <MenuItem key={field} value={field}>
-                      {field === "timestamp" ? "Added Date" : finalVal}
-                    </MenuItem>
-                  );
-                })}
-              </TextField>
-            </div>
-            <div className={classes.sortButtonFields}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                onClick={(e) => setIsDesc(false)}
-              >
-                Sort By Asc
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                size="medium"
-                onClick={(e) => setIsDesc(true)}
-              >
-                Sort by Desc
-              </Button>
-            </div>
-            <Grid container spacing={4} className={classes.parentContainer}>
-              {filteredEmployees.map((employee) => (
-                <Grid key={employee.id} item md={3} sm={6} xs={12}>
-                  <Card className={classes.card} key={employee.id}>
-                    <CardContent>
-                      <Typography variant="h5" color="textSecondary">
-                        {`${employee.firstName} ${employee.middleName[0]}. ${employee.lastName}`}
-                      </Typography>
+            <TextField
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              select
+              label="Sort by"
+              variant="outlined"
+              className={classes.sortSelectField}
+            >
+              {sortFields.map((field) => {
+                let val = field.replace(/([a-z])([A-Z])/g, "$1 $2");
+                let finalVal = val.charAt(0).toUpperCase() + val.slice(1);
+                return (
+                  <MenuItem key={field} value={field}>
+                    {field === "timestamp" ? "Added Date" : finalVal}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
+          </div>
+          <div className={classes.sortButtonFields}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="medium"
+              onClick={(e) => setIsDesc(false)}
+            >
+              Sort By Asc
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="medium"
+              onClick={(e) => setIsDesc(true)}
+            >
+              Sort by Desc
+            </Button>
+          </div>
+          <Grid container spacing={4} className={classes.parentContainer}>
+            {filteredEmployees.map((employee) => (
+              <Grid key={employee.id} item md={3} sm={6} xs={12}>
+                <Card className={classes.card} key={employee.id}>
+                  <CardContent>
+                    <Typography variant="h5" color="textSecondary">
+                      {`${employee.firstName} ${employee.middleName[0]}. ${employee.lastName}`}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {employee.workerCategory}
+                    </Typography>
+                    <div style={{ display: "flex", gap: 16 }}>
                       <Typography variant="body2" color="textSecondary">
-                        {employee.workerCategory}
+                        Wages: {employee.dailyWages}
                       </Typography>
-                      <div style={{ display: "flex", gap: 16 }}>
-                        <Typography variant="body2" color="textSecondary">
-                          Wages: {employee.dailyWages}
+                      {employee.isExited ? (
+                        <Typography variant="body2" color="secondary">
+                          Exited
                         </Typography>
-                        {employee.isExited ? (
-                          <Typography variant="body2" color="secondary">
-                            Exited
-                          </Typography>
-                        ) : null}
-                      </div>
-                      <Tooltip title="View">
-                        <Fab
-                          color="secondary"
-                          className={classes.cardAction}
-                          size="small"
-                          onClick={() =>
-                            history.push(`/employees/${employee.id}`)
-                          }
-                        >
-                          <Visibility fontSize="small" />
-                        </Fab>
-                      </Tooltip>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-            <Tooltip title="Add New Employee" aria-label="add">
-              <Fab
-                color="secondary"
-                className={classes.fixed}
-                size="large"
-                onClick={() => history.push("/employees/add")}
-              >
-                <AddRounded fontSize="large" />
-              </Fab>
-            </Tooltip>
-          </React.Fragment>
-        );
-      }
-    } else {
-      return <Loading loading={loading} />;
+                      ) : null}
+                    </div>
+                    <Tooltip title="View">
+                      <Fab
+                        color="secondary"
+                        className={classes.cardAction}
+                        size="small"
+                        onClick={() =>
+                          history.push(`/employees/${employee.id}`)
+                        }
+                      >
+                        <Visibility fontSize="small" />
+                      </Fab>
+                    </Tooltip>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Tooltip title="Add New Employee" aria-label="add">
+            <Fab
+              color="secondary"
+              className={classes.fixed}
+              size="large"
+              onClick={() => history.push("/employees/add")}
+            >
+              <AddRounded fontSize="large" />
+            </Fab>
+          </Tooltip>
+        </React.Fragment>
+      );
     }
   };
 
