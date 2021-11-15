@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Fab,
   FormControl,
   FormControlLabel,
@@ -16,7 +17,13 @@ import { db } from "../firebase";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Loading from "../Components/Loading";
-import { Edit, ExitToApp, Visibility } from "@material-ui/icons";
+import {
+  AddToPhotosSharp,
+  Delete,
+  Edit,
+  ExitToApp,
+  Visibility,
+} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -46,6 +53,7 @@ export default function EmployeeDetails(props) {
 
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [submitLoad, setSubmitLoad] = useState(false);
   const [error, setError] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
 
@@ -123,9 +131,9 @@ export default function EmployeeDetails(props) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const onDeleteHandler = () => {
+  const onExitHandler = () => {
     const isSure = window.confirm(
-      `Are you sure you want to mark exit of ${data.firstName} ${data.lastName}?`
+      `Are you sure you want to change current status of ${data.firstName} ${data.lastName}?`
     );
     if (!isSure) {
       return;
@@ -134,8 +142,30 @@ export default function EmployeeDetails(props) {
         .doc(authUser.displayName)
         .collection("employees")
         .doc(props.match.params.id)
-        .update({ isExited: true })
+        .update({ isExited: !data.isExited })
         .then(() => props.history.push("/employees"))
+        .catch((error) => alert(error));
+    }
+  };
+
+  const onDeleteHandler = () => {
+    setSubmitLoad(true);
+    const isSure = window.confirm(
+      `Are you sure you want to delete ${data.firstName} ${data.lastName}? This is irreversible and you will lose all the previous monthly data associated with this employee. Marking exit will ensure the previous data of the employee won't be lost.`
+    );
+    if (!isSure) {
+      setSubmitLoad(false);
+      return;
+    } else {
+      db.collection(authUser.uid)
+        .doc(authUser.displayName)
+        .collection("employees")
+        .doc(props.match.params.id)
+        .delete()
+        .then(() => {
+          setSubmitLoad(false);
+          props.history.push("/employees");
+        })
         .catch((error) => alert(error));
     }
   };
@@ -179,13 +209,33 @@ export default function EmployeeDetails(props) {
                 </Fab>
               </Tooltip>
             )}
-            {isDisabled ? (
-              <Tooltip title="Mark Exit" aria-label="delete">
-                <Fab color="secondary" size="small" onClick={onDeleteHandler}>
-                  <ExitToApp size="small" />
-                </Fab>
-              </Tooltip>
-            ) : null}
+            {isDisabled && (
+              <>
+                {!data.isExited ? (
+                  <Tooltip title="Mark Exit" aria-label="update">
+                    <Fab color="secondary" size="small" onClick={onExitHandler}>
+                      <ExitToApp size="small" />
+                    </Fab>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Mark Entry" aria-label="update">
+                    <Fab color="secondary" size="small" onClick={onExitHandler}>
+                      <AddToPhotosSharp size="small" />
+                    </Fab>
+                  </Tooltip>
+                )}
+
+                <Tooltip title="Delete" aria-label="delete">
+                  <Fab color="secondary" size="small" onClick={onDeleteHandler}>
+                    {submitLoad ? (
+                      <CircularProgress size={25} color="inherit" />
+                    ) : (
+                      <Delete fontSize="small" />
+                    )}
+                  </Fab>
+                </Tooltip>
+              </>
+            )}
           </div>
 
           <form
@@ -352,6 +402,24 @@ export default function EmployeeDetails(props) {
                 error={error}
                 helperText={
                   error && !data.pfNumber ? "PF number is Required Field" : null
+                }
+                onFocus={() => setError(false)}
+              />
+              <TextField
+                fullWidth
+                label="Aadhar No"
+                variant={isDisabled ? "standard" : "outlined"}
+                color="primary"
+                className={classes.formField}
+                disabled={isDisabled}
+                required
+                value={data.aadhar}
+                onChange={onChangeHandler("aadhar")}
+                error={error}
+                helperText={
+                  error && !data.aadhar
+                    ? "Aadhar number is Required Field"
+                    : null
                 }
                 onFocus={() => setError(false)}
               />

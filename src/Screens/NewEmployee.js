@@ -53,6 +53,7 @@ export default function NewEmployee({ authUser }) {
     bankAccountNumber: null,
     ifscCode: "",
     pfNumber: "",
+    aadhar: "",
     workerCategory: "",
     mobileNumber: null,
   };
@@ -74,6 +75,7 @@ export default function NewEmployee({ authUser }) {
       !data.bankAccountNumber ||
       !data.ifscCode ||
       !data.pfNumber ||
+      !data.aadhar ||
       !data.workerCategory
     ) {
       setError(true);
@@ -267,6 +269,22 @@ export default function NewEmployee({ authUser }) {
             error={error && !data.pfNumber}
             helperText={
               error && !data.pfNumber ? "PF number is Required Field" : null
+            }
+            onFocus={() => setError(false)}
+          />
+          <TextField
+            fullWidth
+            label="Aadhar No."
+            variant="outlined"
+            color="primary"
+            className={classes.formField}
+            required
+            onChange={onChangeHandler("aadhar")}
+            error={error && !data.aadhar}
+            helperText={
+              error && !data.aadhar
+                ? "Aadhar card number is Required Field"
+                : null
             }
             onFocus={() => setError(false)}
           />

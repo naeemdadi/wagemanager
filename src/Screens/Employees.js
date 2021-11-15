@@ -217,11 +217,11 @@ export default function Employees(props) {
                       <Typography variant="body2" color="textSecondary">
                         Wages: {employee.dailyWages}
                       </Typography>
-                      {employee.isExited ? (
+                      {employee.isExited && (
                         <Typography variant="body2" color="secondary">
                           Exited
                         </Typography>
-                      ) : null}
+                      )}
                     </div>
                     <Tooltip title="View">
                       <Fab
