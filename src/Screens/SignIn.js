@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  guest: {
+    marginBottom: theme.spacing(1),
+  },
   link: {
     cursor: "pointer",
   },
@@ -87,6 +90,13 @@ export default function SignIn() {
           .catch((error) => alert(error));
       }
     }
+  };
+
+  const onGuestSignIn = () => {
+    auth
+      .signInWithEmailAndPassword("test@gmail.com", "test123")
+      .then(() => history.push("/"))
+      .catch((error) => alert(error));
   };
 
   const passwordReset = () => {
@@ -160,6 +170,15 @@ export default function SignIn() {
             className={classes.submit}
           >
             Sign In
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            className={classes.guest}
+            onClick={onGuestSignIn}
+          >
+            Sign In as Guest
           </Button>
           <Grid container>
             <Grid item xs>

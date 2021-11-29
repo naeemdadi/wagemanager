@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import XLSX from "xlsx";
 import React from "react";
+import { ListAlt } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   textFieldContainer: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formField: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
   },
 }));
@@ -218,14 +219,6 @@ export default function WagesSheet(props) {
         >
           Wages Sheet
         </Typography>
-        <Button
-          color="secondary"
-          size="small"
-          variant="contained"
-          onClick={downloadExcel}
-        >
-          Export to Excel
-        </Button>
       </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="wages sheet">
@@ -265,6 +258,15 @@ export default function WagesSheet(props) {
           </TableBody>
         </Table>
       </TableContainer>
+      <Button
+        color="secondary"
+        variant="contained"
+        className={classes.formField}
+        endIcon={<ListAlt />}
+        onClick={downloadExcel}
+      >
+        Export to Excel
+      </Button>
     </React.Fragment>
   );
 }

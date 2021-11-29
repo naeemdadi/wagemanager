@@ -11,7 +11,12 @@ import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { db } from "../firebase";
 import Loading from "../Components/Loading";
-import { Delete, Edit, Visibility, ListAlt } from "@material-ui/icons";
+import {
+  Delete,
+  Edit,
+  Visibility,
+  SubdirectoryArrowRight,
+} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -26,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formField: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
   },
   datePicker: {
@@ -199,7 +204,7 @@ export default function MonthlyDetails(props) {
                 </Fab>
               </Tooltip>
             )}
-            {isDisabled ? (
+            {isDisabled && (
               <Tooltip title="Delete" aria-label="delete">
                 <Fab color="secondary" size="small" onClick={onDeleteHandler}>
                   {submitLoad ? (
@@ -209,23 +214,7 @@ export default function MonthlyDetails(props) {
                   )}
                 </Fab>
               </Tooltip>
-            ) : null}
-
-            {isDisabled ? (
-              <Tooltip title="Wages Sheet" aria-label="wages">
-                <Fab
-                  color="secondary"
-                  size="small"
-                  component={RouterLink}
-                  to={{
-                    pathname: `${props.match.params.id}/wagessheet`,
-                    state: { data, employees },
-                  }}
-                >
-                  <ListAlt />
-                </Fab>
-              </Tooltip>
-            ) : null}
+            )}
           </div>
 
           <form
@@ -290,7 +279,7 @@ export default function MonthlyDetails(props) {
               );
             })}
 
-            {!isDisabled ? (
+            {!isDisabled && (
               <Button
                 type="submit"
                 color="primary"
@@ -304,7 +293,22 @@ export default function MonthlyDetails(props) {
                   "Update"
                 )}
               </Button>
-            ) : null}
+            )}
+            {isDisabled && (
+              <Button
+                color="secondary"
+                variant="contained"
+                className={classes.formField}
+                endIcon={<SubdirectoryArrowRight />}
+                component={RouterLink}
+                to={{
+                  pathname: `${props.match.params.id}/wagessheet`,
+                  state: { data, employees },
+                }}
+              >
+                Wages Sheet
+              </Button>
+            )}
           </form>
         </div>
       );
