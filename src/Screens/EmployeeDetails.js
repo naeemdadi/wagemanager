@@ -107,17 +107,36 @@ export default function EmployeeDetails(props) {
   };
 
   const onChangeHandler = (input) => (e) => {
-    if ([input] === "firstName" || "middleName" || "lastName") {
+    if (["firstName", "middleName", "lastName"].includes(input)) {
       setData({
         ...data,
-        [input]: capitalizeFirstLetter(e.target.value),
+        [input]: capitalizeFirstLetter(e.target.value).replace(/ /g, ""),
       });
-    } else {
-      setData({
-        ...data,
-        [input]: e.target.value,
-      });
+      return;
     }
+    if (
+      ["dailyWages", "otRate", "bankAccountNumber", "mobileNumber"].includes(
+        input
+      )
+    ) {
+      let val = Math.sign(e.target.value);
+      if (val === -1) {
+        setData({
+          ...data,
+          [input]: null,
+        });
+      } else {
+        setData({
+          ...data,
+          [input]: e.target.value,
+        });
+      }
+      return;
+    }
+    setData({
+      ...data,
+      [input]: e.target.value.replace(/ /g, ""),
+    });
   };
 
   const handleDateChange = (input) => (e) => {
@@ -128,7 +147,7 @@ export default function EmployeeDetails(props) {
   };
 
   function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return (string.charAt(0).toUpperCase() + string.slice(1)).replace(/ /g, "");
   }
 
   const onExitHandler = () => {
@@ -237,7 +256,6 @@ export default function EmployeeDetails(props) {
               </>
             )}
           </div>
-
           <form
             noValidate
             autoComplete="off"
@@ -314,7 +332,7 @@ export default function EmployeeDetails(props) {
                 error={error}
                 helperText={
                   error && !data.dailyWages
-                    ? "Daily wage is Required Field"
+                    ? "Daily wage is Required Field and it should not be negative value"
                     : null
                 }
                 onFocus={() => setError(false)}
@@ -333,7 +351,7 @@ export default function EmployeeDetails(props) {
                 error={error}
                 helperText={
                   error && !data.otRate
-                    ? "Overtime Rate is Required Field"
+                    ? "Overtime Rate is Required Field and it should not be negative value"
                     : null
                 }
                 onFocus={() => setError(false)}
@@ -365,7 +383,7 @@ export default function EmployeeDetails(props) {
                 error={error}
                 helperText={
                   error && !data.bankAccountNumber
-                    ? "Bank Account number is Required Field"
+                    ? "Bank Account number is Required Field and it should not be negative value"
                     : null
                 }
                 onFocus={() => setError(false)}

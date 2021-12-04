@@ -196,7 +196,7 @@ export default function Home(props) {
               </Grid>
             ))}
           </Grid>
-          <Tooltip title="Add New Employee" aria-label="add">
+          <Tooltip title="Add New Month Data" aria-label="add">
             <Fab
               color="secondary"
               className={classes.fixed}

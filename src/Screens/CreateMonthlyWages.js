@@ -68,17 +68,27 @@ export default function CreateMonthlyWages(props) {
 
   const onChangeDaysHandler = (id) => (e) => {
     setData(
-      data.map((el) =>
-        el.empRef === id ? { ...el, workingDays: e.target.value } : el
-      )
+      data.map((el) => {
+        let val = Math.sign(e.target.value);
+        if (val === -1) {
+          return { ...el };
+        } else {
+          return el.empRef === id ? { ...el, workingDays: e.target.value } : el;
+        }
+      })
     );
   };
 
   const onChangeOtHandler = (id) => (e) => {
     setData(
-      data.map((el) =>
-        el.empRef === id ? { ...el, otHours: e.target.value } : el
-      )
+      data.map((el) => {
+        let val = Math.sign(e.target.value);
+        if (val === -1) {
+          return { ...el };
+        } else {
+          return el.empRef === id ? { ...el, otHours: e.target.value } : el;
+        }
+      })
     );
   };
 
@@ -86,7 +96,7 @@ export default function CreateMonthlyWages(props) {
     e.preventDefault();
     setSubmitLoad(true);
 
-    const errorFilter = data.filter((el) => !el.workingDays && !el.otHours);
+    const errorFilter = data.filter((el) => !el.workingDays || !el.otHours);
 
     if (errorFilter.length !== 0) {
       setError(true);

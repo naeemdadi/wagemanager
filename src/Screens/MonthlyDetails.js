@@ -95,9 +95,14 @@ export default function MonthlyDetails(props) {
   }, [props, authUser]);
 
   const onChangeDaysHandler = (id) => (e) => {
-    const updatedData = data.employee.map((el) =>
-      el.empRef === id ? { ...el, workingDays: e.target.value } : el
-    );
+    const updatedData = data.employee.map((el) => {
+      let val = Math.sign(e.target.value);
+      if (val === -1) {
+        return { ...el };
+      } else {
+        return el.empRef === id ? { ...el, workingDays: e.target.value } : el;
+      }
+    });
 
     setData({
       ...data,
@@ -106,9 +111,14 @@ export default function MonthlyDetails(props) {
   };
 
   const onChangeOtHandler = (id) => (e) => {
-    const updatedData = data.employee.map((el) =>
-      el.empRef === id ? { ...el, otHours: e.target.value } : el
-    );
+    const updatedData = data.employee.map((el) => {
+      let val = Math.sign(e.target.value);
+      if (val === -1) {
+        return { ...el };
+      } else {
+        return el.empRef === id ? { ...el, otHours: e.target.value } : el;
+      }
+    });
 
     setData({
       ...data,
@@ -121,7 +131,7 @@ export default function MonthlyDetails(props) {
     setSubmitLoad(true);
 
     const errorFilter = data.employee.filter(
-      (el) => !el.workingDays && !el.otHours
+      (el) => !el.workingDays || !el.otHours
     );
 
     if (errorFilter.length !== 0) {
