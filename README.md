@@ -1,95 +1,71 @@
-# WagesManager
+# Wage Manager
 
-WagesManager is a wage management tool for the small enterprises. With WagesManager companies can register themselves and than can add as many employees as they have with data like name, PF Number, Daily Wage, OT, Bank Account Number etc. Then companies can create monthly wages calculations by adding monthly present days and Overtime hours to respective month with all the available employees. Companies can mark exit of an employee anytime with that they won't loose previous data of an employee. But with new month entry they won't see the exited employees.
-After adding monhly details companies can see full monthly wages data as a table format anytime as well as export the same data as an excel sheet. For future improvement we can add more functionality related to employees PF, PT and automated salary slips as well. This tool is created with firebase and is completely scalable.
+Wage Manager is a web application designed to help employers manage their employees' wages and work schedules efficiently. This platform provides an intuitive interface for tracking hours worked, calculating wages, and generating detailed reports.
 
-## Live Demo
+## Features
 
-https://wagemanager-d9d38.web.app
+- **User Authentication**: Secure sign-in options including guest access for quick evaluations.
+- **Dashboard**: Overview of key metrics and recent activities.
+- **Employee Management**: Add, edit, and remove employees from the system.
+- **Work Schedule Tracking**: Log and manage work hours for each employee.
+- **Wage Calculation**: Automatic calculation of wages based on logged hours.
+- **Reports**: Generate and export detailed reports on employee work hours and wages.
+- **Responsive Design**: Fully functional on both desktop and mobile devices.
 
-## Test Credientials
+## Getting Started
 
-Email Address: test@gmail.com
-Password: test123
+### Prerequisites
 
-## Technologies Used
+To run this project locally, you will need the following installed on your machine:
 
-- ReactJs
-- Firebase Firestore
-- Firebase Authantication
-- Material UI
-- Firebase Hosting
-- React Router
-- Material Date Picker
-- xlsx for excel conversion
+- Node.js
+- npm (Node Package Manager)
 
-# Getting Started with Create React App
+### Installation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/naeemdadi/wagesmanager.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd wagesmanager
+    ```
+3. Install the dependencies:
+    ```bash
+    npm install
+    ```
 
-## Available Scripts
+### Running the Application
 
-In the project directory, you can run:
+To start the application locally, use the following command:
+```bash
+npm start
+```
 
-### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This will run the app in development mode. Open http://localhost:3000 to view it in the browser.
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The application can be deployed using various platforms like Firebase, Vercel, or Heroku. Ensure you set the appropriate environment variables for your deployment setup.
 
-### `yarn build` fails to minify
+### Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Sign In: Use the guest sign-in option for quick access.
+2. Dashboard: Review the key metrics and latest activities.
+3. Manage Employees: Add new employees or edit existing ones from the Employee Management section.
+4. Log Work Hours: Track work hours for employees by adding entries in the Work Schedule section.
+5. Calculate Wages: Automatically calculate wages based on the logged hours.
+6. Generate Reports: Create detailed reports on employee work hours and wages, available for export.
+
+### Technologies Used
+
+- Frontend: React.js
+- Backend: Node.js, Express.js
+- Database: Firebase Firestore
+- Authentication: Firebase Authentication
+- Deployment: Firebase Hosting
+
+### Contact
+
+For any questions or feedback, please contact at [Gmail](mailto:naeemdadi85@gmail.com).
